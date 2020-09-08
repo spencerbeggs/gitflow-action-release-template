@@ -1,0 +1,11 @@
+overwrite: true
+schema: "vendor/github.graphql"
+documents: "src/graphql/**"
+generates:
+  src/generated/index.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typed-document-node
+config:
+  constEnums: true

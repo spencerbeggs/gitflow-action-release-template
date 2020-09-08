@@ -1,0 +1,28 @@
+{
+	"compilerOptions": {
+		"target": "ES2020",
+		"module": "ESNext",
+		"moduleResolution": "node",
+		"lib": ["ESNext"],
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"strict": true,
+		"noImplicitAny": false,
+		"strictNullChecks": false,
+		"noImplicitThis": true,
+		"alwaysStrict": true,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": false,
+		"strictPropertyInitialization": false,
+		"pretty": false,
+		"jsx": "preserve",
+		"resolveJsonModule": true,
+		"preserveConstEnums": false
+	},
+	"typeAcquisition": {
+		"enable": true
+	},
+	"exclude": ["node_modules", "dist", "tmp", ".cache", ".vscode", ".github", ".dependabot"]
+}

@@ -1,0 +1,50 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+	{
+			"name": "test action in watch mode",
+			"type": "node",
+			"request": "launch",
+			"skipFiles": ["<node_internals>/**"],
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"program": "${workspaceRoot}/dist/index.mjs",
+			"cwd": "${workspaceRoot}",
+			"envFile": "${workspaceRoot}/.env.test",
+			"outputCapture": "console",
+			"internalConsoleOptions": "openOnSessionStart",
+			"preLaunchTask": "npm:dev"
+		},
+		{
+			"name": "test in production container",
+			"type": "docker",
+			"request": "launch",
+			"containerName": "gitflow-action-release-template",
+			"preLaunchTask": "container:reboot",
+			"platform": "node",
+			"removeContainerAfterDebug": false,
+			"node": {
+				"port": 5858,
+				"remoteRoot": "/app",
+				"localRoot": "${workspaceRoot}/dist"
+			}
+		},
+		{
+			"name": "test in debug container",
+			"type": "docker",
+			"request": "launch",
+			"containerName": "gitflow-action-release-template",
+			"preLaunchTask": "container:debug",
+			"platform": "node"
+		},
+		{
+			"name": "bootstap environment",
+			"type": "docker",
+			"request": "launch",
+			"containerName": "gitflow-action-release-template",
+			"preLaunchTask": "container:bootstrap",
+			"platform": "node"
+		}
+	]
+}

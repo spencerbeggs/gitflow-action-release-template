@@ -1,0 +1,10 @@
+{
+	"presets": [["@babel/preset-typescript", { "allowNamespaces": true }]],
+	"plugins": ["@babel/proposal-class-properties", "lodash", "macros"],
+	"comments": false,
+	"env": {
+		"test": {
+			"plugins": ["dynamic-import-node"]
+		}
+	}
+}

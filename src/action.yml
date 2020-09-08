@@ -1,0 +1,12 @@
+name: GitFlow Action Release Template
+description: Build and release GitHub Actions for Node.js with GitFlow
+branding:
+  icon: package
+  color: purple
+inputs:
+  token:
+    description: "Your GitHub access token"
+    required: true
+runs:
+  using: "docker"
+  image: "Dockerfile"

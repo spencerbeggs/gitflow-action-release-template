@@ -1,0 +1,16 @@
+{
+	"useTabs": true,
+	"tabWidth": 4,
+	"trailingComma": "all",
+	"printWidth": 125,
+	"overrides": [
+		{
+			"files": ".json",
+			"options": { "parser": "json" }
+		},
+		{
+			"files": [".prettierrc", ".eslintrc", ".babelrc", ".gqlconfig", ".huskyrc", ".babel-plugin-macrosrc"],
+			"options": { "parser": "json" }
+		}
+	]
+}

@@ -1,0 +1,326 @@
+{
+	"version": "2.0.0",
+	"presentation": {
+		"showReuseMessage": false,
+		"clear": true
+	},
+	"tasks": [
+		{
+			"label": "npm:dev",
+			"type": "npm",
+			"script": "rollup --waitForBundleInput --watch",
+			"isBackground": true,
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": true,
+				"group": "test"
+			},
+			"problemMatcher": {
+				"owner": "node",
+				"fileLocation": "relative",
+				"pattern": {
+					"regexp": "^\\[!\\] \\(plugin typescript\\) Error: @rollup/plugin-typescript .*$",
+					"file": 1,
+					"location": 2,
+					"severity": 3,
+					"code": 4,
+					"message": 5
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^rollup v\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$",
+					"endsPattern": "^\\[\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}] waiting for changes...$"
+				}
+			},
+			"dependsOn": [
+				"npm:clean"
+			],
+			"dependsOrder": "sequence"
+		},
+		{
+			"label": "docker:container:stop",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"ps",  "-a", "-q", "--filter", "ancestor=\"dockerusername/gitflow-action-release-template:run\"", "|", "xargs", "docker", "stop"
+			],
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": false,
+				"group": "build"
+			}
+		},
+		{
+			"label": "docker:container:remove",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"ps",  "-a", "-q", "--filter",  "ancestor=\"dockerusername/gitflow-action-release-template:run\"", "|", "xargs", "docker", "rm"
+			],
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": false,
+				"group": "build"
+			}
+		},
+		{
+			"label": "npm:github-schema",
+			"type": "npm",
+			"script": "apollo client:download-schema --config=apollo.config.js vendor/github.graphql",
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": false,
+				"group": "build"
+			}
+		},
+		{
+			"label": "npm:codegen",
+			"type": "npm",
+			"script": "graphql-codegen --config codegen.yml",
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": false,
+				"group": "build"
+			}
+		},
+		{
+			"label": "npm:clean",
+			"type": "shell",
+			"command": "rm",
+			"args": [
+				"-rf",
+				"dist"
+			],
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": false,
+				"group": "build"
+			}
+		},
+		{
+			"label": "npm:rollup",
+			"type": "npm",
+			"script": "rollup",
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": false,
+				"group": "build"
+			}
+		},
+		{
+			"label": "npm:package",
+			"type": "npm",
+			"script": "ts-node --project tsconfig.run.json lib/package.ts",
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": false,
+				"group": "build"
+			},
+			"problemMatcher": {
+				"owner": "node",
+				"fileLocation": "relative",
+				"pattern": {
+					"regexp": "\\[Error: (.*)\\n  errno: (.*),\\n  code: '(.*)',\\n  syscall: '(.*)',\\n  path: '(.*)'\\n}",
+					"file": 5,
+					"location": 4,
+					"severity": 2,
+					"code": 3,
+					"message": 1
+				},
+				"background": {
+					"activeOnStart": false,
+					"beginsPattern": "Packaging build\\.",
+					"endsPattern": "Packaged successfully\\."
+				}
+			}
+		},
+		{
+			"label": "docker:image:run",
+			"type": "docker-build",
+			"dockerBuild": {
+				"tag": "dockerusername/gitflow-action-release-template:run",
+				"target": "run",
+				"context": "${workspaceFolder}/dist",
+				"dockerfile": "${workspaceFolder}/dist/Dockerfile",
+				"pull": true,
+				"labels": {
+					"includeDefaults": false
+				}
+			},
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": false,
+				"group": "build"
+			}
+		},
+		{
+			"label": "docker:image:debug",
+			"type": "docker-build",
+			"dockerBuild": {
+				"tag": "dockerusername/gitflow-action-release-template:debug",
+				"target": "debug",
+				"context": "${workspaceFolder}/dist",
+				"dockerfile": "${workspaceFolder}/dist/Dockerfile",
+				"pull": true,
+				"labels": {
+					"includeDefaults": false
+				}
+			},
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": false,
+				"group": "build"
+			}
+		},
+		{
+			"label": "docker:container:run",
+			"type": "docker-run",
+			"node": {
+				"enableDebugging": true
+		  	},
+			"dockerRun": {
+				"containerName": "gitflow-action-release-template",
+				"image": "dockerusername/gitflow-action-release-template:run",
+				"command": "node --inspect-brk=0.0.0.0:5858 /app/index.mjs",
+				"envFiles": [
+					"${workspaceFolder}/.env.test"
+				],
+				"node": {
+					"enableDebugging": true,
+					"inspectMode": "break"
+				},
+				"portsPublishAll": true,
+				"ports": [{
+					"containerPort": 5858,
+					"hostPort": 5858
+				}],
+				"volumes": [{
+					"localPath": "${workspaceFolder}/tmp",
+					"containerPath": "/tmp",
+					"permissions": "rw"
+				}],
+				"labels": {
+					"includeDefaults": false
+				}
+			},
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": false,
+				"group": "build"
+			}
+		},
+		{
+			"label": "docker:container:debug",
+			"type": "docker-run",
+			"isBackground": true,
+			"dockerRun": {
+				"containerName": "gitflow-action-release-template",
+				"image": "dockerusername/gitflow-action-release-template:debug",
+				"envFiles": [
+					"${workspaceFolder}/.env.test"
+				],
+				"portsPublishAll": true,
+				"ports": [
+					{
+						"containerPort": 5858,
+						"hostPort": 5858
+					}
+				],
+				"volumes": [{
+					"localPath": "${workspaceFolder}/tmp",
+					"containerPath": "/tmp",
+					"permissions": "rw"
+				}],
+				"labels": {
+					"includeDefaults": false
+				}
+			},
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": false,
+				"group": "build"
+			}
+		},
+		{
+			"label": "container:bootstrap",
+			"dependsOn": [
+				"npm:clean",
+				"npm:github-schema",
+				"npm:codegen",
+				"npm:rollup",
+				"npm:package",
+				"docker:container:stop",
+				"docker:container:remove",
+				"docker:image:run",
+				"docker:container:run"
+			],
+			"dependsOrder": "sequence",
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": true,
+				"group": "build"
+			}
+		},
+		{
+			"label": "container:debug",
+			"dependsOn": [
+				"npm:clean",
+				"npm:github-schema",
+				"npm:codegen",
+				"npm:rollup",
+				"npm:package",
+				"docker:container:stop",
+				"docker:container:remove",
+				"docker:image:debug",
+				"docker:container:debug"
+			],
+			"dependsOrder": "sequence",
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": true,
+				"group": "build"
+			}
+		},
+		{
+			"label": "container:reboot",
+			"dependsOn": [
+				"docker:container:stop",
+				"docker:container:remove",
+				"npm:clean",
+				"npm:rollup",
+				"npm:package",
+				"docker:image:run",
+				"docker:container:run"
+			],
+			"dependsOrder": "sequence",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"echo": false,
+				"showReuseMessage": false,
+				"clear": true,
+				"group": "build"
+			}
+		}
+	]
+}
