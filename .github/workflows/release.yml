@@ -19,6 +19,10 @@ jobs:
           registry: ghcr.io
           password: ${{ secrets.CR_PAT }}
           username: ${{ github.repository_owner }}
+      - name: Checkout source
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
