@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:14.8.0 as base
+FROM mhart/alpine-node:14.12.0 as base
 COPY package.json yarn.lock /app/
 
 FROM base as dependencies
@@ -15,7 +15,7 @@ FROM build as test
 ENV NODE_ENV production
 CMD [ "node", "/app/index.mjs"]
 
-FROM mhart/alpine-node:14.8.0-slim as deploy
+FROM mhart/alpine-node:slim-14.12.0 as deploy
 LABEL org.opencontainers.image.source https://github.com/spencerbeggs/gitflow-action-release-template
 ENV NODE_ENV production
 COPY --from=build /app/dist/ /app/
