@@ -36,7 +36,7 @@ jobs:
         with:
           push: true
           target: deploy
-          tags: spencerbeggs/gitflow-action-release-template:latest
+          tags: ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
   # build:
