@@ -48,7 +48,7 @@ jobs:
           elif [[ $GITHUB_REF == refs/pull/* ]]; then
             DOCKER_VERSION=pr-${{ github.event.number }}
           fi
-          DOCKER_TAGS="${DOCKER_IMAGE}:${VERSION}"
+          DOCKER_TAGS="${DOCKER_IMAGE}:${DOCKER_VERSION}"
           if [[ $DOCKER_VERSION =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
             MINOR=${DOCKER_VERSION%.*}
             MAJOR=${DOCKER_VERSION%.*}
