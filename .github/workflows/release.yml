@@ -36,12 +36,10 @@ jobs:
         shell: bash
         run: |
           REPO=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}')
-          SOURCE_TAG=$(echo ${GITHUB_REF:10})
-          TAG=$(echo ${GITHUB_REF:17})
+          TAG=$(echo ${GITHUB_REF:10})
           PACKAGE="$REPO-$TAG"
           MAJOR_VERSION=$(echo $TAG | cut -d. -f1)
           echo ::set-output name=repo::"$REPO"
-          echo ::set-output name=source_tag::"$SOURCE_TAG"
           echo ::set-output name=tag::"$TAG"
           echo ::set-output name=major_version::"$MAJOR_VERSION"
           echo ::set-output name=version::"v$TAG"
