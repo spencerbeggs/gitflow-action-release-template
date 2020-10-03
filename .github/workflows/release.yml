@@ -36,7 +36,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=ghcr.io/$(echo "$GITHUB_REPOSITORY")
+          DOCKER_IMAGE=$(echo "$GITHUB_REPOSITORY")
           DOCKER_VERSION=noop
           if [ "${{ github.event_name }}" = "schedule" ]; then
             DOCKER_VERSION=nightly
