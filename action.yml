@@ -9,4 +9,4 @@ inputs:
     required: true
 runs:
   using: "docker"
-  image: "Dockerfile"
+  image: "ghcr.io/spencerbeggs/gitflow-action-release-template:0.0.5"
