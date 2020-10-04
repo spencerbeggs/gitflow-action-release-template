@@ -8,8 +8,36 @@ jobs:
   initialize:
     name: Initialize release
     runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    if: ${{ github.event.created }}
+    steps:
+      - name: Create pull request to develop
+        id: pull-request-develop
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: develop
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: ${{ steps.meta.outputs.canary }}
+          pr_draft: false
+      - name: Create pull request to main
+        id: pull-request-main
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: ${{ steps.meta.outputs.branch }}
+          pr_draft: false
+      - name: Bump version
+        run: |
+          git config user.name ${{ github.actor }}
+          git config user.email ${{ github.actor }}@users.noreply.github.com
+          yarn version --new-version ${{ steps.meta.outputs.version }} --no-git-tag-version
+          git add package.json
+          git commit --message "Bump to ${{ steps.meta.outputs.version }}"
+          echo "::set-output name=commit::$(git rev-parse HEAD)"
+          git push origin ${{ steps.meta.outputs.branch }}
+  test:
+    name: Test release code
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -60,34 +88,6 @@ jobs:
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true' && steps.node-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --production=false --frozen-lockfile
-      - name: Create pull request to develop
-        id: pull-request-develop
-        if: ${{ github.event.created }}
-        uses: repo-sync/pull-request@v2
-        with:
-          destination_branch: develop
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: ${{ steps.meta.outputs.canary }}
-          pr_draft: false
-      - name: Create pull request to main
-        id: pull-request-main
-        if: ${{ github.event.created }}
-        uses: repo-sync/pull-request@v2
-        with:
-          destination_branch: main
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: ${{ steps.meta.outputs.branch }}
-          pr_draft: false
-      - name: Bump version
-        if: ${{ github.event.created }}
-        run: |
-          git config user.name ${{ github.actor }}
-          git config user.email ${{ github.actor }}@users.noreply.github.com
-          yarn version --new-version ${{ steps.meta.outputs.version }} --no-git-tag-version
-          git add package.json
-          git commit --message "Bump to ${{ steps.meta.outputs.version }}"
-          echo "::set-output name=commit::$(git rev-parse HEAD)"
-          git push origin ${{ steps.meta.outputs.branch }}
       - name: Lint code
         run: yarn lint
       - name: Unit tests
