@@ -8,10 +8,10 @@ jobs:
   initialize:
     name: Initialize release
     runs-on: ubuntu-latest
-    if: ${{ github.event.created }}
     steps:
       - name: Create pull request to develop
         id: pull-request-develop
+        if: ${{ github.event.created }}
         uses: repo-sync/pull-request@v2
         with:
           destination_branch: develop
@@ -20,6 +20,7 @@ jobs:
           pr_draft: false
       - name: Create pull request to main
         id: pull-request-main
+        if: ${{ github.event.created }}
         uses: repo-sync/pull-request@v2
         with:
           destination_branch: main
@@ -27,6 +28,7 @@ jobs:
           pr_title: ${{ steps.meta.outputs.branch }}
           pr_draft: false
       - name: Bump version
+        if: ${{ github.event.created }}
         run: |
           git config user.name ${{ github.actor }}
           git config user.email ${{ github.actor }}@users.noreply.github.com
