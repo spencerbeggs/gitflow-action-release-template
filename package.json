@@ -1,6 +1,6 @@
 {
 	"name": "gitflow-action-release-template",
-	"version": "v1.2.3",
+	"version": "v1.2.5",
 	"description": "Build and release GitHub Actions for Node.js with GitFlow",
 	"module": "src/index.ts",
 	"author": "C. Spencer Beggs <spencer@beg.gs>",
@@ -16,7 +16,7 @@
 		"bootstrap": "ts-node --project tsconfig.run.json lib/bootstrap.ts init",
 		"build": "yarn clean && NODE_ENV=production yarn rollup",
 		"build-dev": "yarn clean && NODE_ENV=development yarn rollup && yarn package",
-		"lint": "tsc -p tsconfig.lint.json --noEmit && eslint '*/**/*.{js,jsx,ts,tsx,json}' --quiet --fix",
+		"lint": "tsc -p tsconfig.lint.json --noEmit && eslint '*/**/*.{js,jsx,ts,tsx,json}'",
 		"package": "ts-node --project tsconfig.run.json lib/package.ts",
 		"dev": "yarn clean && NODE_ENV=development rollup -c rollup.config.ts --watch --waitForBundleInput",
 		"rollup": "rollup -c rollup.config.ts",
