@@ -24,14 +24,6 @@ jobs:
           echo ::set-output name=version::"v$RELEASE_TAG"
           echo ::set-output name=branch::"$RELEASE_TYPE/$RELEASE_TAG"
           echo ::set-output name=canary::"canary/$RELEASE_TAG"
-      - name: Create pull request to main
-        id: pull-request-main
-        uses: repo-sync/pull-request@v2
-        with:
-          destination_branch: main
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: ${{ steps.meta.outputs.branch }}
-          pr_draft: false
       - name: Create pull request to develop
         id: pull-request-develop
         uses: repo-sync/pull-request@v2
@@ -40,12 +32,20 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           pr_title: ${{ steps.meta.outputs.canary }}
           pr_draft: false
+      - name: Create pull request to main
+        id: pull-request-main
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: ${{ steps.meta.outputs.branch }}
+          pr_draft: false
       - name: Bump version
         run: |
           git config user.name ${{ github.actor }}
           git config user.email ${{ github.actor }}@users.noreply.github.com
           yarn version --new-version ${{ steps.meta.outputs.version }} --no-git-tag-version
           git add package.json
-          git commit --message "Bump to version ${{ steps.meta.outputs.version }}"
+          git commit --message "Bump to ${{ steps.meta.outputs.version }}"
           echo "::set-output name=commit::$(git rev-parse HEAD)"
           git push origin ${{ steps.meta.outputs.branch }}
