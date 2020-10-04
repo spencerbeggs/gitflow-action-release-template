@@ -1,6 +1,6 @@
 {
 	"name": "gitflow-action-release-template",
-	"version": "v1.2.2",
+	"version": "v1.2.3",
 	"description": "Build and release GitHub Actions for Node.js with GitFlow",
 	"module": "src/index.ts",
 	"author": "C. Spencer Beggs <spencer@beg.gs>",
