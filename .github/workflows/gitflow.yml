@@ -24,14 +24,6 @@ jobs:
           echo ::set-output name=version::"v$RELEASE_TAG"
           echo ::set-output name=branch::"$RELEASE_TYPE/$RELEASE_TAG"
           echo ::set-output name=canary::"canary/$RELEASE_TAG"
-      - name: Create pull request to main
-        id: pull-request-main
-        uses: repo-sync/pull-request@v2
-        with:
-          destination_branch: main
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: ${{ steps.meta.outputs.branch }}
-          pr_draft: false
       - name: Create pull request to develop
         id: pull-request-develop
         uses: repo-sync/pull-request@v2
@@ -39,6 +31,14 @@ jobs:
           destination_branch: develop
           github_token: ${{ secrets.GITHUB_TOKEN }}
           pr_title: ${{ steps.meta.outputs.canary }}
+          pr_draft: false
+      - name: Create pull request to main
+        id: pull-request-main
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: ${{ steps.meta.outputs.branch }}
           pr_draft: false
       - name: Bump version
         run: |
